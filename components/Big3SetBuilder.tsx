@@ -4,7 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./Big3SetBuilder.module.css";
 import { COEF_NOTES, EXERCISE_ORDER, EXERCISES, ExerciseKey, RM_COEFFICIENTS } from "@/lib/exercises";
 import { computeGoalTable, computeWarmup, fmtWeight, roundWeight } from "@/lib/calc";
-import { applySetLog, emptyProgressState, loadProgress, saveProgress, ProgressState, SetLog } from "@/lib/progress";
+import {
+  applySetLog,
+  emptyProgressState,
+  loadProgress,
+  saveProgress,
+  stepRep,
+  ProgressState,
+  SetLog,
+} from "@/lib/progress";
 
 const INCREMENT = 2.5;
 type TrackKind = "top" | "backoff";
@@ -44,12 +52,12 @@ export default function Big3SetBuilder() {
   const exercise = EXERCISES[exerciseKey];
   const exProgress = progress[exerciseKey];
 
-  function updateReps(kind: TrackKind, index: number, value: string) {
+  function stepReps(kind: TrackKind, index: number, delta: number) {
     setProgress((prev) => {
       const ex = prev[exerciseKey];
       const field = kind === "top" ? "topReps" : "backoffReps";
       const next = [...ex[field]] as SetLog;
-      next[index] = value === "" ? null : Math.max(0, Math.floor(Number(value) || 0));
+      next[index] = stepRep(next[index], delta);
       return { ...prev, [exerciseKey]: { ...ex, [field]: next } };
     });
   }
@@ -212,7 +220,7 @@ export default function Big3SetBuilder() {
                 {isMainDay && (
                   <SetTracker
                     reps={exProgress.topReps}
-                    onChangeRep={(i, v) => updateReps("top", i, v)}
+                    onStepRep={(i, d) => stepReps("top", i, d)}
                     onLog={() => submitLog("top", effectiveTop, day.main.repsHigh)}
                     onReset={exProgress.topWeight !== null ? () => resetTracking("top") : undefined}
                     targetReps={day.main.repsHigh}
@@ -237,7 +245,7 @@ export default function Big3SetBuilder() {
 
                     <SetTracker
                       reps={exProgress.backoffReps}
-                      onChangeRep={(i, v) => updateReps("backoff", i, v)}
+                      onStepRep={(i, d) => stepReps("backoff", i, d)}
                       onLog={() => submitLog("backoff", effectiveBackoff!, backoff.def.repsHigh)}
                       onReset={exProgress.backoffWeight !== null ? () => resetTracking("backoff") : undefined}
                       targetReps={backoff.def.repsHigh}
@@ -300,14 +308,14 @@ export default function Big3SetBuilder() {
 
 function SetTracker({
   reps,
-  onChangeRep,
+  onStepRep,
   onLog,
   onReset,
   targetReps,
   baseReps,
 }: {
   reps: SetLog;
-  onChangeRep: (index: number, value: string) => void;
+  onStepRep: (index: number, delta: number) => void;
   onLog: () => void;
   onReset?: () => void;
   targetReps: number;
@@ -315,22 +323,35 @@ function SetTracker({
 }) {
   return (
     <div className={styles.tracker}>
-      <div className={styles.trackerRow}>
+      <div className={styles.repsGroup}>
         {reps.map((r, i) => (
-          <input
-            key={i}
-            type="number"
-            min={0}
-            className={styles.repsInput}
-            placeholder={`${i + 1}set目`}
-            value={r ?? ""}
-            onChange={(e) => onChangeRep(i, e.target.value)}
-          />
+          <div key={i} className={styles.repsStepper}>
+            <span className={styles.repsStepperLabel}>{i + 1}set目</span>
+            <div className={styles.repsStepperControls}>
+              <button
+                type="button"
+                className={styles.stepBtn}
+                aria-label={`${i + 1}セット目の回数を1減らす`}
+                onClick={() => onStepRep(i, -1)}
+              >
+                −
+              </button>
+              <span className={styles.repsValue}>{r ?? "–"}</span>
+              <button
+                type="button"
+                className={styles.stepBtn}
+                aria-label={`${i + 1}セット目の回数を1増やす`}
+                onClick={() => onStepRep(i, 1)}
+              >
+                ＋
+              </button>
+            </div>
+          </div>
         ))}
-        <button type="button" className={styles.logButton} onClick={onLog}>
-          記録
-        </button>
       </div>
+      <button type="button" className={styles.logButton} onClick={onLog}>
+        記録
+      </button>
       <p className={styles.trackerHint}>
         3セットとも{targetReps}回できれば次回+{INCREMENT}kgして{baseReps}回3セットから再開します。
         {onReset && (

@@ -47,6 +47,20 @@ export function saveProgress(state: ProgressState): void {
   }
 }
 
+const MAX_LOGGED_REPS = 20;
+
+// +1/-1ボタンでの回数入力。未入力(null) -> 0 -> 1 -> 2 ... と行き来する
+// （0から-1でnullに戻り、未入力状態にクリアできる）。
+export function stepRep(current: number | null, delta: number): number | null {
+  if (delta > 0) {
+    const next = current === null ? 1 : current + delta;
+    return Math.min(next, MAX_LOGGED_REPS);
+  }
+  if (current === null) return null;
+  if (current === 0) return null;
+  return Math.max(current + delta, 0);
+}
+
 // 3セットすべてが目標回数（レンジ上限）以上できていれば達成とみなす。
 export function isAchieved(reps: SetLog, targetReps: number): boolean {
   return reps.every((r) => r !== null && r >= targetReps);
