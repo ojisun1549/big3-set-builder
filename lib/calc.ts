@@ -18,7 +18,10 @@ export type GoalRow = {
 };
 
 // 目標1RMを reps回で達成するために必要な重量を逆算する。
-// 1RM ≈ 重量×(1+reps/係数) を 重量について解くと 重量 = 1RM/(1+reps/係数)。
+// 1RM ≈ 重量×(1+(reps-1)/係数) を 重量について解くと 重量 = 1RM/(1+(reps-1)/係数)。
+// reps-1 を使うのは、reps=1（1回=1RMそのもの）のとき水増しなしで
+// 必要重量＝目標1RMとなるようにするため（reps をそのまま使うと、1回上げただけの
+// 重量が定義上の1RMより低い値として逆算されてしまう）。
 export function computeGoalTable(
   goalRM: number,
   coefficient: number,
@@ -27,7 +30,7 @@ export function computeGoalTable(
 ): GoalRow[] {
   const rows: GoalRow[] = [];
   for (let reps = 1; reps <= maxReps; reps++) {
-    const rawWeight = goalRM / (1 + reps / coefficient);
+    const rawWeight = goalRM / (1 + (reps - 1) / coefficient);
     const weight = roundWeight(rawWeight, inc);
     rows.push({ reps, weight, pctOfGoal: (weight / goalRM) * 100 });
   }

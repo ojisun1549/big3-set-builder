@@ -174,7 +174,7 @@ export default function Big3SetBuilder() {
       <h2 className={styles.sectionHeading}>目標1RMから逆算</h2>
       <p className={styles.sectionLead}>
         目指す1RM（{exercise.name}）を入力すると、その重量が何kg×何回で「計算上の1RM」に到達するかを一覧表示します。RM換算式は
-        1RM ≈ 重量×(1+回数/{RM_COEFFICIENTS[exerciseKey]}) を使用（{exercise.name}の係数）。
+        1RM ≈ 重量×(1+(回数-1)/{RM_COEFFICIENTS[exerciseKey]}) を使用（{exercise.name}の係数、1回＝目標1RMそのもの）。
       </p>
 
       <div className={styles.goalCard}>
