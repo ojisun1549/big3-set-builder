@@ -1,9 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "./Big3SetBuilder.module.css";
 import { COEF_NOTES, EXERCISE_ORDER, EXERCISES, ExerciseKey, RM_COEFFICIENTS } from "@/lib/exercises";
 import { computeGoalTable, computeWarmup, fmtWeight, roundWeight } from "@/lib/calc";
+import { applySetLog, emptyProgressState, loadProgress, saveProgress, ProgressState, SetLog } from "@/lib/progress";
+
+const INCREMENT = 2.5;
+type TrackKind = "top" | "backoff";
 
 const DAY_STRIPE: Record<string, string> = {
   main: "var(--main-day)",
@@ -22,9 +26,58 @@ export default function Big3SetBuilder() {
   const [rmInput, setRmInput] = useState("82.5");
   const [roundInc, setRoundInc] = useState(2.5);
   const [goalInput, setGoalInput] = useState("100");
+  const [progress, setProgress] = useState<ProgressState>(emptyProgressState());
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const loaded = loadProgress();
+    if (loaded) setProgress(loaded);
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    saveProgress(progress);
+  }, [progress, hydrated]);
 
   const rm = parseFloat(rmInput);
   const exercise = EXERCISES[exerciseKey];
+  const exProgress = progress[exerciseKey];
+
+  function updateReps(kind: TrackKind, index: number, value: string) {
+    setProgress((prev) => {
+      const ex = prev[exerciseKey];
+      const field = kind === "top" ? "topReps" : "backoffReps";
+      const next = [...ex[field]] as SetLog;
+      next[index] = value === "" ? null : Math.max(0, Math.floor(Number(value) || 0));
+      return { ...prev, [exerciseKey]: { ...ex, [field]: next } };
+    });
+  }
+
+  function submitLog(kind: TrackKind, currentWeight: number, targetReps: number) {
+    setProgress((prev) => {
+      const ex = prev[exerciseKey];
+      const repsField = kind === "top" ? "topReps" : "backoffReps";
+      const weightField = kind === "top" ? "topWeight" : "backoffWeight";
+      const result = applySetLog(currentWeight, ex[repsField], targetReps, INCREMENT);
+      return {
+        ...prev,
+        [exerciseKey]: { ...ex, [weightField]: result.weight, [repsField]: result.reps },
+      };
+    });
+  }
+
+  function resetTracking(kind: TrackKind) {
+    setProgress((prev) => {
+      const ex = prev[exerciseKey];
+      const repsField = kind === "top" ? "topReps" : "backoffReps";
+      const weightField = kind === "top" ? "topWeight" : "backoffWeight";
+      return {
+        ...prev,
+        [exerciseKey]: { ...ex, [weightField]: null, [repsField]: [null, null, null] },
+      };
+    });
+  }
 
   const goal = parseFloat(goalInput);
   const goalTable = useMemo(() => {
@@ -112,62 +165,89 @@ export default function Big3SetBuilder() {
         <div className={styles.empty}>1RMを入力してください</div>
       ) : (
         <div className={styles.days}>
-          {dayResults.map(({ day, mainWeight, warmup, backoff }) => (
-            <div
-              key={day.key}
-              className={styles.dayCard}
-              style={{ ["--stripe" as string]: DAY_STRIPE[day.key] }}
-            >
-              <h2>{day.label}</h2>
-              <p className={styles.desc}>{day.desc}</p>
+          {dayResults.map(({ day, mainWeight, warmup, backoff }) => {
+            const isMainDay = day.key === "main";
+            const effectiveTop = isMainDay ? exProgress.topWeight ?? mainWeight : mainWeight;
+            const topWarmup = isMainDay ? computeWarmup(effectiveTop, roundInc, true) : warmup;
+            const effectiveBackoff = backoff ? exProgress.backoffWeight ?? backoff.weight : null;
 
-              <div className={styles.sectionLabel}>アップ</div>
-              {warmup.length ? (
-                <table className={styles.warmupTable}>
-                  <tbody>
-                    {warmup.map((w, i) => (
-                      <tr key={i}>
-                        <td className={styles.w}>{fmtWeight(w.weight)} kg</td>
-                        <td className={styles.r}>× {w.reps}回</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className={styles.meta}>アップ省略可（軽重量のため）</div>
-              )}
+            return (
+              <div
+                key={day.key}
+                className={styles.dayCard}
+                style={{ ["--stripe" as string]: DAY_STRIPE[day.key] }}
+              >
+                <h2>{day.label}</h2>
+                <p className={styles.desc}>{day.desc}</p>
 
-              <div className={styles.sectionLabel}>メイン</div>
-              <div className={styles.setLine}>
-                <div>
-                  <span className={styles.wt}>{fmtWeight(mainWeight)} kg</span>{" "}
-                  <span className={styles.meta}>
-                    × {day.main.repsLow}〜{day.main.repsHigh}回 × {day.main.setsLabel}
-                  </span>
-                </div>
-                <div className={styles.pct}>
-                  {day.main.pctLow}〜{day.main.pctHigh}%
-                </div>
-              </div>
+                <div className={styles.sectionLabel}>アップ</div>
+                {topWarmup.length ? (
+                  <table className={styles.warmupTable}>
+                    <tbody>
+                      {topWarmup.map((w, i) => (
+                        <tr key={i}>
+                          <td className={styles.w}>{fmtWeight(w.weight)} kg</td>
+                          <td className={styles.r}>× {w.reps}回</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className={styles.meta}>アップ省略可（軽重量のため）</div>
+                )}
 
-              {backoff && (
-                <>
-                  <div className={styles.sectionLabel}>バックオフ</div>
-                  <div className={styles.setLine}>
-                    <div>
-                      <span className={styles.wt}>{fmtWeight(backoff.weight)} kg</span>{" "}
-                      <span className={styles.meta}>
-                        × {backoff.def.repsLow}〜{backoff.def.repsHigh}回 × {backoff.def.setsLabel}
-                      </span>
-                    </div>
-                    <div className={styles.pct}>
-                      {backoff.def.pctLow}〜{backoff.def.pctHigh}%
-                    </div>
+                <div className={styles.sectionLabel}>{isMainDay ? "メイン（トップセット）" : "メイン"}</div>
+                <div className={styles.setLine}>
+                  <div>
+                    <span className={styles.wt}>{fmtWeight(effectiveTop)} kg</span>{" "}
+                    <span className={styles.meta}>
+                      × {day.main.repsLow}〜{day.main.repsHigh}回 × {day.main.setsLabel}
+                    </span>
                   </div>
-                </>
-              )}
-            </div>
-          ))}
+                  <div className={styles.pct}>
+                    {day.main.pctLow}〜{day.main.pctHigh}%
+                  </div>
+                </div>
+
+                {isMainDay && (
+                  <SetTracker
+                    reps={exProgress.topReps}
+                    onChangeRep={(i, v) => updateReps("top", i, v)}
+                    onLog={() => submitLog("top", effectiveTop, day.main.repsHigh)}
+                    onReset={exProgress.topWeight !== null ? () => resetTracking("top") : undefined}
+                    targetReps={day.main.repsHigh}
+                    baseReps={day.main.repsLow}
+                  />
+                )}
+
+                {backoff && (
+                  <>
+                    <div className={styles.sectionLabel}>バックオフ</div>
+                    <div className={styles.setLine}>
+                      <div>
+                        <span className={styles.wt}>{fmtWeight(effectiveBackoff!)} kg</span>{" "}
+                        <span className={styles.meta}>
+                          × {backoff.def.repsLow}〜{backoff.def.repsHigh}回 × {backoff.def.setsLabel}
+                        </span>
+                      </div>
+                      <div className={styles.pct}>
+                        {backoff.def.pctLow}〜{backoff.def.pctHigh}%
+                      </div>
+                    </div>
+
+                    <SetTracker
+                      reps={exProgress.backoffReps}
+                      onChangeRep={(i, v) => updateReps("backoff", i, v)}
+                      onLog={() => submitLog("backoff", effectiveBackoff!, backoff.def.repsHigh)}
+                      onReset={exProgress.backoffWeight !== null ? () => resetTracking("backoff") : undefined}
+                      targetReps={backoff.def.repsHigh}
+                      baseReps={backoff.def.repsLow}
+                    />
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -214,6 +294,54 @@ export default function Big3SetBuilder() {
           </table>
         )}
       </div>
+    </div>
+  );
+}
+
+function SetTracker({
+  reps,
+  onChangeRep,
+  onLog,
+  onReset,
+  targetReps,
+  baseReps,
+}: {
+  reps: SetLog;
+  onChangeRep: (index: number, value: string) => void;
+  onLog: () => void;
+  onReset?: () => void;
+  targetReps: number;
+  baseReps: number;
+}) {
+  return (
+    <div className={styles.tracker}>
+      <div className={styles.trackerRow}>
+        {reps.map((r, i) => (
+          <input
+            key={i}
+            type="number"
+            min={0}
+            className={styles.repsInput}
+            placeholder={`${i + 1}set目`}
+            value={r ?? ""}
+            onChange={(e) => onChangeRep(i, e.target.value)}
+          />
+        ))}
+        <button type="button" className={styles.logButton} onClick={onLog}>
+          記録
+        </button>
+      </div>
+      <p className={styles.trackerHint}>
+        3セットとも{targetReps}回できれば次回+{INCREMENT}kgして{baseReps}回3セットから再開します。
+        {onReset && (
+          <>
+            {" "}
+            <button type="button" className={styles.resetLink} onClick={onReset}>
+              1RM%の計算値に戻す
+            </button>
+          </>
+        )}
+      </p>
     </div>
   );
 }

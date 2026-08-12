@@ -238,3 +238,55 @@
   font-size: 0.8rem;
   text-align: right;
 }
+
+.tracker {
+  margin: 0 0 12px;
+}
+
+.trackerRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.repsInput {
+  width: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  background: #1f232c;
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 7px 4px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.logButton {
+  flex: 0 0 auto;
+  background: var(--accent2);
+  border: none;
+  color: #0b1620;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.trackerHint {
+  font-size: 0.7rem;
+  color: var(--sub);
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+
+.resetLink {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent2);
+  font-size: 0.7rem;
+  text-decoration: underline;
+  cursor: pointer;
+}

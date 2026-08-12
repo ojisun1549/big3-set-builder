@@ -35,8 +35,8 @@ export const EXERCISES: Record<ExerciseKey, ExerciseDef> = {
         key: "main",
         label: "胸の日（メイン）",
         desc: "筋力+筋肥大の主日",
-        main: { pctLow: 82.5, pctHigh: 87.5, repsLow: 3, repsHigh: 5, setsLabel: "3セット" },
-        backoff: { pctLow: 72.5, pctHigh: 77.5, repsLow: 6, repsHigh: 10, setsLabel: "2〜4セット" },
+        main: { pctLow: 82.5, pctHigh: 87.5, repsLow: 3, repsHigh: 4, setsLabel: "3セット" },
+        backoff: { pctLow: 72.5, pctHigh: 77.5, repsLow: 6, repsHigh: 8, setsLabel: "3セット" },
       },
       {
         key: "medium",
@@ -59,8 +59,8 @@ export const EXERCISES: Record<ExerciseKey, ExerciseDef> = {
         key: "main",
         label: "メインDay（高強度）",
         desc: "筋力+筋肥大の主日",
-        main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 5, setsLabel: "3セット" },
-        backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 10, setsLabel: "2〜4セット" },
+        main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 4, setsLabel: "3セット" },
+        backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 8, setsLabel: "3セット" },
       },
       {
         key: "medium",
@@ -83,8 +83,8 @@ export const EXERCISES: Record<ExerciseKey, ExerciseDef> = {
         key: "main",
         label: "メインDay（高強度）",
         desc: "筋力+筋肥大の主日",
-        main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 5, setsLabel: "3セット" },
-        backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 10, setsLabel: "2〜4セット" },
+        main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 4, setsLabel: "3セット" },
+        backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 8, setsLabel: "3セット" },
       },
       {
         key: "medium",
