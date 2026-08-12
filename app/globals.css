@@ -1,0 +1,28 @@
+:root {
+  --bg: #0f1115;
+  --card: #181b22;
+  --card-border: #2a2f3a;
+  --accent: #ff6b35;
+  --accent2: #4fc3f7;
+  --text: #eef0f3;
+  --sub: #9aa3b2;
+  --main-day: #ff6b35;
+  --medium-day: #4fc3f7;
+  --light-day: #66d19e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: "Hiragino Sans", "Yu Gothic", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}

@@ -1,0 +1,179 @@
+.wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.title {
+  font-size: 1.4rem;
+  margin: 0 0 4px;
+}
+
+.lead {
+  color: var(--sub);
+  font-size: 0.85rem;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.controls {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.75rem;
+  color: var(--sub);
+}
+
+.exerciseButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.exerciseButtons button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  background: #1f232c;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.15s;
+}
+
+.exerciseButtons button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #111;
+  font-weight: 600;
+}
+
+.input,
+.select {
+  background: #1f232c;
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 140px;
+}
+
+.select {
+  width: auto;
+}
+
+.coefNote {
+  font-size: 0.75rem;
+  color: var(--sub);
+  background: #141822;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.dayCard {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+  border-top: 3px solid var(--stripe, var(--accent));
+}
+
+.dayCard h2 {
+  font-size: 1.05rem;
+  margin: 0 0 2px;
+}
+
+.dayCard .desc {
+  font-size: 0.78rem;
+  color: var(--sub);
+  margin: 0 0 14px;
+}
+
+.sectionLabel {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+  margin: 14px 0 6px;
+}
+
+.sectionLabel:first-of-type {
+  margin-top: 0;
+}
+
+.warmupTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.warmupTable td {
+  padding: 5px 4px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.warmupTable td.w {
+  color: var(--text);
+  font-weight: 600;
+  width: 34%;
+}
+
+.warmupTable td.r {
+  color: var(--sub);
+}
+
+.setLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 10px;
+  background: #141822;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.setLine .wt {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.setLine .meta {
+  font-size: 0.78rem;
+  color: var(--sub);
+}
+
+.setLine .pct {
+  font-size: 0.7rem;
+  color: var(--sub);
+}
+
+.empty {
+  color: var(--sub);
+  font-size: 0.85rem;
+  padding: 20px;
+  text-align: center;
+}
