@@ -62,18 +62,6 @@ export const EXERCISES: Record<ExerciseKey, ExerciseDef> = {
         main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 4, setsLabel: "3セット" },
         backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 8, setsLabel: "3セット" },
       },
-      {
-        key: "medium",
-        label: "中強度Day",
-        desc: "中強度・技術＋筋力",
-        main: { pctLow: 72.5, pctHigh: 80, repsLow: 4, repsHigh: 6, setsLabel: "3セット" },
-      },
-      {
-        key: "light",
-        label: "軽めDay",
-        desc: "軽め・フォーム練習",
-        main: { pctLow: 62.5, pctHigh: 70, repsLow: 5, repsHigh: 8, setsLabel: "2〜3セット" },
-      },
     ],
   },
   deadlift: {
@@ -85,18 +73,6 @@ export const EXERCISES: Record<ExerciseKey, ExerciseDef> = {
         desc: "筋力+筋肥大の主日",
         main: { pctLow: 80, pctHigh: 85, repsLow: 3, repsHigh: 4, setsLabel: "3セット" },
         backoff: { pctLow: 70, pctHigh: 75, repsLow: 6, repsHigh: 8, setsLabel: "3セット" },
-      },
-      {
-        key: "medium",
-        label: "中強度Day",
-        desc: "中強度・技術＋筋力",
-        main: { pctLow: 72.5, pctHigh: 80, repsLow: 4, repsHigh: 6, setsLabel: "3セット" },
-      },
-      {
-        key: "light",
-        label: "軽めDay",
-        desc: "軽め・フォーム練習",
-        main: { pctLow: 62.5, pctHigh: 70, repsLow: 5, repsHigh: 8, setsLabel: "2〜3セット" },
       },
     ],
   },
