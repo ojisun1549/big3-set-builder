@@ -112,3 +112,11 @@ export const COEF_NOTES: Record<ExerciseKey, string> = {
 };
 
 export const EXERCISE_ORDER: ExerciseKey[] = ["bench", "squat", "deadlift"];
+
+// RM換算式の係数 (1RM ≈ 重量×(1+reps/係数))。
+// ベンチプレスは40、スクワット・デッドリフトは大筋群かつ疲労耐性が高いため33.3を使用。
+export const RM_COEFFICIENTS: Record<ExerciseKey, number> = {
+  bench: 40,
+  squat: 33.3,
+  deadlift: 33.3,
+};

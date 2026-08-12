@@ -11,6 +11,29 @@ export function fmtWeight(w: number): string {
   return (Math.round(w * 100) / 100).toString().replace(/\.0$/, "");
 }
 
+export type GoalRow = {
+  reps: number;
+  weight: number;
+  pctOfGoal: number;
+};
+
+// 目標1RMを reps回で達成するために必要な重量を逆算する。
+// 1RM ≈ 重量×(1+reps/係数) を 重量について解くと 重量 = 1RM/(1+reps/係数)。
+export function computeGoalTable(
+  goalRM: number,
+  coefficient: number,
+  inc: number,
+  maxReps: number = 10
+): GoalRow[] {
+  const rows: GoalRow[] = [];
+  for (let reps = 1; reps <= maxReps; reps++) {
+    const rawWeight = goalRM / (1 + reps / coefficient);
+    const weight = roundWeight(rawWeight, inc);
+    rows.push({ reps, weight, pctOfGoal: (weight / goalRM) * 100 });
+  }
+  return rows;
+}
+
 export function computeWarmup(topWeight: number, inc: number, includeTopStep: boolean): WarmupStep[] {
   const steps: { pct: number; reps: string }[] = [
     { pct: 0.4, reps: "8〜10" },

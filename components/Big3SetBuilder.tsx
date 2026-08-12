@@ -2,8 +2,8 @@
 
 import { useMemo, useState } from "react";
 import styles from "./Big3SetBuilder.module.css";
-import { COEF_NOTES, EXERCISE_ORDER, EXERCISES, ExerciseKey } from "@/lib/exercises";
-import { computeWarmup, fmtWeight, roundWeight } from "@/lib/calc";
+import { COEF_NOTES, EXERCISE_ORDER, EXERCISES, ExerciseKey, RM_COEFFICIENTS } from "@/lib/exercises";
+import { computeGoalTable, computeWarmup, fmtWeight, roundWeight } from "@/lib/calc";
 
 const DAY_STRIPE: Record<string, string> = {
   main: "var(--main-day)",
@@ -21,9 +21,16 @@ export default function Big3SetBuilder() {
   const [exerciseKey, setExerciseKey] = useState<ExerciseKey>("bench");
   const [rmInput, setRmInput] = useState("82.5");
   const [roundInc, setRoundInc] = useState(2.5);
+  const [goalInput, setGoalInput] = useState("100");
 
   const rm = parseFloat(rmInput);
   const exercise = EXERCISES[exerciseKey];
+
+  const goal = parseFloat(goalInput);
+  const goalTable = useMemo(() => {
+    if (!goal || goal <= 0) return null;
+    return computeGoalTable(goal, RM_COEFFICIENTS[exerciseKey], roundInc, 10);
+  }, [goal, exerciseKey, roundInc]);
 
   const dayResults = useMemo(() => {
     if (!rm || rm <= 0) return null;
@@ -163,6 +170,50 @@ export default function Big3SetBuilder() {
           ))}
         </div>
       )}
+
+      <h2 className={styles.sectionHeading}>目標1RMから逆算</h2>
+      <p className={styles.sectionLead}>
+        目指す1RM（{exercise.name}）を入力すると、その重量が何kg×何回で「計算上の1RM」に到達するかを一覧表示します。RM換算式は
+        1RM ≈ 重量×(1+回数/{RM_COEFFICIENTS[exerciseKey]}) を使用（{exercise.name}の係数）。
+      </p>
+
+      <div className={styles.goalCard}>
+        <div className={styles.field}>
+          <label htmlFor="goalInput">目標1RM (kg)</label>
+          <input
+            id="goalInput"
+            className={styles.input}
+            type="number"
+            min={1}
+            step={0.5}
+            value={goalInput}
+            onChange={(e) => setGoalInput(e.target.value)}
+          />
+        </div>
+
+        {!goalTable ? (
+          <div className={styles.empty}>目標1RMを入力してください</div>
+        ) : (
+          <table className={styles.goalTable}>
+            <thead>
+              <tr>
+                <th>回数</th>
+                <th>必要な重量</th>
+                <th>目標1RM比</th>
+              </tr>
+            </thead>
+            <tbody>
+              {goalTable.map((row) => (
+                <tr key={row.reps}>
+                  <td className={styles.reps}>{row.reps}回</td>
+                  <td className={styles.weight}>{fmtWeight(row.weight)} kg</td>
+                  <td className={styles.pct}>{row.pctOfGoal.toFixed(1)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

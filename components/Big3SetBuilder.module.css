@@ -177,3 +177,64 @@
   padding: 20px;
   text-align: center;
 }
+
+.sectionHeading {
+  font-size: 1.1rem;
+  margin: 32px 0 4px;
+}
+
+.sectionLead {
+  color: var(--sub);
+  font-size: 0.82rem;
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.goalCard {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.goalTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-top: 12px;
+}
+
+.goalTable th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.goalTable td {
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.goalTable tr:last-child td {
+  border-bottom: none;
+}
+
+.goalTable td.reps {
+  color: var(--sub);
+  width: 20%;
+}
+
+.goalTable td.weight {
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.goalTable td.pct {
+  color: var(--sub);
+  font-size: 0.8rem;
+  text-align: right;
+}
